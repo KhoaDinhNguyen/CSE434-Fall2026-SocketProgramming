@@ -1,4 +1,5 @@
 from command_status import *
+from .peers import peers_network
 
 
 class DHT:
@@ -26,6 +27,9 @@ def setup_dht(*args):
 
     if dht != None:
         print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_DHT_EXIST)
+        return
+    if leader_name not in peers_network:
+        print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_PEER_NAME_NOT_EXIST)
         return
     if num_users < 3:
         print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_LESS_THAN_THREE_USERS)
