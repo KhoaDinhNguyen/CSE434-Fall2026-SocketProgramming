@@ -56,3 +56,11 @@ def print_register_failure(status: ManagerCommandStatus):
 
         case ManagerCommandStatus.REGISTER_PEER_NAME_EXIST:
             print("Peer name already exists")
+
+
+def log_sent(dest_name: str, dest_addr: str, msg: str):
+    print(f"[SEND] -> {dest_name} ({dest_addr}): {msg}")
+
+
+def log_receive(dest_name: str, dest_addr: str, msg: str):
+    print(f"[RECV] <- {dest_name} ({dest_addr}): {msg}")

@@ -14,6 +14,8 @@ class Peer:
         self.m_port = m_port
         self.p_port = p_port
         self.state = PeerState.FREE
+        self.identifier = -1
+        self.ring_size = -1
 
 
 peers_network = {}

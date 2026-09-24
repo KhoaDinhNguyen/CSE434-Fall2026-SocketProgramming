@@ -1,41 +1,48 @@
-from command_status import *
-from .peers import peers_network
-
-
-class DHT:
-    def __init__(self, leader_name: str, num_users: int, year: int):
-        self.leader_name = leader_name
-        self.num_users = num_users
-        self.year = year
-
-
-dht = None
+from command_status import failure_code, success_code
+from . import peers
+from . import dht
+import random
 
 
 def setup_dht(*args):
-    global dht
     params = args[0]
 
     try:
         leader_name = params[0]
         num_users = int(params[1])
         year = int(params[2])
-
     except:
-        print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_INVALID_COMMAND)
-        return
+        return failure_code
 
-    if dht != None:
-        print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_DHT_EXIST)
-        return
-    if leader_name not in peers_network:
-        print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_PEER_NAME_NOT_EXIST)
-        return
-    if num_users < 3:
-        print_setup_dht_failure(ManagerCommandStatus.SETUP_DHT_LESS_THAN_THREE_USERS)
-        return
+    if dht.dhtInstance != None:
+        return failure_code
+    if leader_name not in peers.peers_network:
+        return failure_code
+    if num_users < 3 or num_users > len(peers.peers_network):
+        return failure_code
 
-    dht = DHT(leader_name, num_users, year)
+    dht.dhtInstance = dht.DHT(leader_name, num_users, year)
 
-    print_success()
-    print("TODO: Complete function")
+    # Set leader name status
+    peers.peers_network[leader_name].state = peers.PeerState.LEADER
+    dht.dhtInstance.peers_in_dht.append(leader_name)
+
+    # Random select n - 1 peer
+    free_peers = [
+        peer.peer_name
+        for peer in peers.peers_network.values()
+        if peer.state == peers.PeerState.FREE
+    ]
+
+    # Set random seed to recreate the result
+    random.seed(42)
+
+    chosen_peer_names = random.sample(free_peers, num_users - 1)
+
+    for name in chosen_peer_names:
+        peers.peers_network[name].state = peers.PeerState.INDHT
+        dht.dhtInstance.peers_in_dht.append(name)
+
+    print(f"[SETUP DHT] Success. Waiting for leader's tasks")
+
+    return success_code

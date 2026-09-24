@@ -2,7 +2,13 @@ import socket
 import sys
 from manager_helpers.setup_dht import setup_dht
 from manager_helpers.register import register
+from manager_helpers.clear import clear
+import manager_helpers.dht as dht
+from manager_helpers.peers import peers_network
+from manager_handlers.register import handle_register
+from manager_handlers.setup_dht import handle_setup_dht
 import command_status
+from utils import create_udp_socket
 
 
 def main():
@@ -16,42 +22,50 @@ def main():
     try:
         # Port number is an integer
         port_num = int(port_num_str)
-        print(f"Manager listening on port {port_num} and ready for command")
+        print(f"Manager listening on port {port_num}...")
     except:
         command_status.print_port_failure(port_num_str)
         return
 
-    manager_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Chuan: Creates a UDP socket for manager to listen on
+    # Creates a UDP socket for manager to listen on
+    manager_socket = create_udp_socket(port_num)
 
-    manager_socket.bind(("0.0.0.0", port_num))  # Chuan: Make the manager listen on the port given in the command line
     while True:
-        data, peer_address = manager_socket.recvfrom(4096)  # Chuan: Wait for a UDP message instead of using input() Also the 4096 is the maximum size (bytes) of the message that can be received at once
-        query = data.decode("utf-8").strip()  # Chuan: Convert the received bytes into a normal Python string
+        # Wait for a UDP message instead of using input() Also the 4096 is the maximum size (bytes) of the message that can be received at once
+        data, peer_address = manager_socket.recvfrom(4096)
+
+        # Convert the received bytes into a normal Python string
+        query = data.decode("utf-8").strip()
 
         if query == "":
             continue
 
-        params = query.split(" ")  
-        command = params[0]
+        params = query.split(" ")
+        # This shows what message the manager received for the required trace output
+        print(f"[RECV] <- {peer_address}: {query}")
 
-        print(f"[RECEIVED] {query}")  # Chuan: This shows what message the manager received for the required trace output
-
-        match command:
+        match params[0]:
             case "setup-dht":
-                response = setup_dht(params[1:])  # Chuan: Save the result so it can be sent back to the peer
-
+                # Save the result so it can be sent back to the peer
+                response = handle_setup_dht(params[1:])
             case "register":
-                response = register(params[1:])  # Chuan: Save the result so it can be sent back to the peer
-
+                # Save the result so it can be sent back to the peer
+                response = handle_register(params[1:])
+            case "clear":
+                response = clear()
             case _:
-                response = "FAILURE"  # Chuan: Give unknown commands a response instead of doing nothing
+                response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 
-        manager_socket.sendto(  # Chuan: Send the command result back to the peer over UDP
-            response.encode("utf-8"),  # Chuan: Convert SUCCESS/FAILURE from a string into bytes
-            peer_address,  # Chuan: Send the response to the peer that originally sent the command
+        # Send the command result back to the peer over UDP
+        manager_socket.sendto(
+            response.encode("utf-8"),
+            peer_address,  # Send the response to the peer that originally sent the command
         )
 
-        print(f"[SENT] {response}")  # Chuan: Shows the outgoing response for the message trace
+        # Shows the outgoing response for the message trace
+        print(f"[SENT] -> {peer_address}: {response}")
+
+        print("=" * 60)
 
 
 if __name__ == "__main__":
