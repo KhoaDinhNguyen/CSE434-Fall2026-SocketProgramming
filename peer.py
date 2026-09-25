@@ -1,8 +1,40 @@
-import socket
+import threading
 import sys
-from command_status import success_code
+import peer_info
 from peer_commands.register import do_register
 from peer_commands.setup_dht import do_setup_dht
+from peer_commands.set_id import handle_set_id
+from peer_commands.dht_complete import do_dht_complete
+from peer_commands.store import handle_store
+
+
+def listen_for_peer_message():
+    while True:
+        data, peer_addr = peer_info.p_socket.recvfrom(4096)
+
+        sys.stdout.write("\r" + " " * 80 + "\r")
+        data = data.decode("utf-8").strip()
+
+        print(f"\n[RECV] <- {peer_addr}: {data}")
+
+        command, args = data.split(" ", 1)
+
+        match command:
+            case "set-id":
+                handle_set_id(args, peer_addr)
+            case "store":
+                handle_store(args)
+            case "Has":
+                pass
+            case _:
+                print(f"Unknown command {data}")
+
+        print("> ", end="", flush=True)
+
+
+def start_listening():
+    thread = threading.Thread(target=listen_for_peer_message, daemon=True)
+    thread.start()
 
 
 def main():
@@ -15,7 +47,7 @@ def main():
     manager_port = int(sys.argv[2])
     manager_addr = (manager_ip, manager_port)
 
-    print("Communicating...")
+    print("Ready for communication...")
 
     while True:
         # The peer reads commands from the user
@@ -31,8 +63,13 @@ def main():
                 break
             case "register":
                 do_register(params[1:], manager_addr)
+                if peer_info.p_socket != None:
+                    start_listening()
             case "setup-dht":
                 do_setup_dht(params[1:], manager_addr)
+            case "dht-complete":
+                do_dht_complete(manager_addr)
+
             case _:
                 print(f"Unknown command: {params[0]}")
 

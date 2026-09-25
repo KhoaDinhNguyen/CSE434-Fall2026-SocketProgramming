@@ -1,13 +1,8 @@
-import socket
 import sys
-from manager_helpers.setup_dht import setup_dht
-from manager_helpers.register import register
-from manager_helpers.clear import clear
-import manager_helpers.dht as dht
-from manager_helpers.peers import peers_network
 from manager_handlers.register import handle_register
 from manager_handlers.setup_dht import handle_setup_dht
 import command_status
+import manager_info
 from utils import create_udp_socket
 
 
@@ -44,17 +39,25 @@ def main():
         # This shows what message the manager received for the required trace output
         print(f"[RECV] <- {peer_address}: {query}")
 
-        match params[0]:
-            case "setup-dht":
-                # Save the result so it can be sent back to the peer
-                response = handle_setup_dht(params[1:])
-            case "register":
-                # Save the result so it can be sent back to the peer
-                response = handle_register(params[1:])
-            case "clear":
-                response = clear()
-            case _:
-                response = "FAILURE"  # Give unknown commands a response instead of doing nothing
+        if manager_info.is_waiting_dht_complete == True:
+            if params[0] == "dht-complete":
+                response = "SUCCESS"
+                manager_info.is_waiting_dht_complete = False
+                print("Leader has completed the setup-dht subtasks")
+            else:
+                response = "FAILURE"
+        else:
+            match params[0]:
+                case "setup-dht":
+                    # Save the result so it can be sent back to the peer
+                    response = handle_setup_dht(params[1:])
+                    if response != "FAILURE":
+                        print("Waiting for dht-complete from leader...")
+                case "register":
+                    # Save the result so it can be sent back to the peer
+                    response = handle_register(params[1:])
+                case _:
+                    response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 
         # Send the command result back to the peer over UDP
         manager_socket.sendto(

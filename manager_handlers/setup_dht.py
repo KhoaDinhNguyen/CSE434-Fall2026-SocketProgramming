@@ -7,8 +7,6 @@ def handle_setup_dht(args) -> str:
     nusers = int(args[1])
     year = int(args[2])
 
-    print(args)
-    print(manager_info.peers_network[leader_name])
     # Assign peer name to be leader name
     manager_info.peers_network[leader_name].state = "LEADER"
 
@@ -31,9 +29,6 @@ def handle_setup_dht(args) -> str:
     manager_info.peers_dht_table.append(leader_name)
     manager_info.peers_dht_table.extend(indth_peer_names)
 
-    return (
-        "SUCCESS\n"
-        + manager_info.output_peers_dht_table()
-        + "\n"
-        + manager_info.output_leader_task()
-    )
+    manager_info.is_waiting_dht_complete = True
+
+    return manager_info.output_peers_dht_table()
