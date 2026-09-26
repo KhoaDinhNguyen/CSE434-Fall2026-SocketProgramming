@@ -2,8 +2,7 @@ import peer_info
 from .set_id import do_set_id
 import time
 from .store import populate_dht
-from data import load_storms_event
-from utils import compute_hash_table_size
+from utils import compute_hash_table_size, load_storms_event
 
 
 def do_setup_dht(args, manager_addr):

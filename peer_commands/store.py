@@ -1,5 +1,4 @@
-from data import StormEvent
-from utils import compute_pos_and_id
+from utils import compute_pos_and_id, StormEvent
 import peer_info
 
 
