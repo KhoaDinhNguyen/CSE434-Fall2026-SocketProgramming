@@ -47,8 +47,7 @@ def main():
 
             # Only leaders can send dht-complete
             leader_address = (leader_info.ip, leader_info.m_port)
-            print(leader_address)
-            print(peer_address)
+
             if command != "dht-complete" or leader_address != peer_address:
                 response = "FAILURE"
             else:
