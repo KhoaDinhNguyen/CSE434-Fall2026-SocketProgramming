@@ -1,7 +1,10 @@
+"""
+peer_info.py contains all global variables for one manager process
+"""
+
+# state information
 name = None
 state = None
-
-# socket
 m_socket = None
 p_socket = None
 

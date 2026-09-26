@@ -4,11 +4,11 @@ import peer_info
 def do_dht_complete(manager_addr):
     message = "dht-complete"
 
-    # send data
+    # Sends command
     peer_info.m_socket.sendto(message.encode("utf-8"), manager_addr)
     print(f"[SEND] -> {manager_addr}: {message}")
-    # receive data
 
+    # Receives response
     reponse, _ = peer_info.m_socket.recvfrom(4096)
     reponse = reponse.decode("utf-8")
 

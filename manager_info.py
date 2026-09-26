@@ -1,5 +1,11 @@
+"""
+manager_info.py contains all global variables for one manager process
+"""
+
+
+# Peer Object
 class Peer:
-    def __init__(self, name: str, ip: str, m_port: str, p_port):
+    def __init__(self, name: str, ip: str, m_port: int, p_port: int):
         self.name = name
         self.ip = ip
         self.m_port = m_port
@@ -9,19 +15,25 @@ class Peer:
         self.ring_size = -1
 
 
+# Mapping <peer_name>: <Peer>
+# All peers in network
 peers_network = {}
-dhtInstance = None
-used_ports = set()
 
-dht_leader_name = None
-dht_nusers = 0
-dht_years = 0
-
+# Only peers in Distributed Hash Table (Leader + INDHT)
 peers_dht_table = []
 
+# Records used pots
+used_ports = set()
+
+# State information
+dht_leader_name = None
+dht_ring_size = 0
+dht_year = 0
+has_dht_exist = False
 is_waiting_dht_complete = False
 
 
+# Create a table listing peerse in DHT
 def output_peers_dht_table():
     output = "\n"
 
