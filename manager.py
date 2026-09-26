@@ -1,57 +1,74 @@
-import socket
 import sys
-from manager_helpers.setup_dht import setup_dht
-from manager_helpers.register import register
-import command_status
+from manager_handlers.register import handle_register
+from manager_handlers.setup_dht import handle_setup_dht
+import manager_info
+from utils import create_udp_socket
 
 
 def main():
     # Check port number existence
     if len(sys.argv) == 1:
-        command_status.print_port_failure("")
+        print("Usage: python manager.py <manager-port>")
         return
-
-    port_num_str = sys.argv[1]
 
     try:
         # Port number is an integer
-        port_num = int(port_num_str)
-        print(f"Manager listening on port {port_num} and ready for command")
+        port_num = int(sys.argv[1])
+        print(f"Manager listening on port {port_num}...")
     except:
-        command_status.print_port_failure(port_num_str)
+        print("Usage: port is integer number")
         return
 
-    manager_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Chuan: Creates a UDP socket for manager to listen on
+    # ======================================= MANAGER PROGRAMMING =======================================
 
-    manager_socket.bind(("0.0.0.0", port_num))  # Chuan: Make the manager listen on the port given in the command line
+    # Creates a UDP socket for manager to listen on
+    manager_socket = create_udp_socket(port_num)
+
     while True:
-        data, peer_address = manager_socket.recvfrom(4096)  # Chuan: Wait for a UDP message instead of using input() Also the 4096 is the maximum size (bytes) of the message that can be received at once
-        query = data.decode("utf-8").strip()  # Chuan: Convert the received bytes into a normal Python string
+        # Wait for a UDP message and 4096 is the maximum size (bytes) of the message that can be received at once
+        data, peer_address = manager_socket.recvfrom(4096)
 
-        if query == "":
+        # Convert the received bytes into a normal Python string
+        data = data.decode("utf-8").strip()
+
+        if data == "":
             continue
 
-        params = query.split(" ")  
+        # command, params = data.split(" ", 1)
+        params = data.split(" ")
         command = params[0]
 
-        print(f"[RECEIVED] {query}")  # Chuan: This shows what message the manager received for the required trace output
+        # Shows what message the manager received for the required trace output
+        print(f"[RECV] <- {peer_address}: {data}")
 
-        match command:
-            case "setup-dht":
-                response = setup_dht(params[1:])  # Chuan: Save the result so it can be sent back to the peer
+        # Special case
+        if manager_info.is_waiting_dht_complete:
+            leader_info = manager_info.peers_network[manager_info.dht_leader_name]
 
-            case "register":
-                response = register(params[1:])  # Chuan: Save the result so it can be sent back to the peer
+            # Only leaders can send dht-complete
+            leader_address = (leader_info.ip, leader_info.m_port)
+            print(leader_address)
+            print(peer_address)
+            if command != "dht-complete" or leader_address != peer_address:
+                response = "FAILURE"
+            else:
+                response = "SUCCESS"
+                manager_info.is_waiting_dht_complete = False
+                print("Leader has completed the setup-dht subtasks")
+        else:
+            match command:
+                case "setup-dht":
+                    response = handle_setup_dht(params[1:])
+                case "register":
+                    response = handle_register(params[1:])
+                case _:
+                    response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 
-            case _:
-                response = "FAILURE"  # Chuan: Give unknown commands a response instead of doing nothing
+        # Send the command result back to the peer over UDP and log it
+        manager_socket.sendto(response.encode("utf-8"), peer_address)
+        print(f"[SENT] -> {peer_address}: {response}")
 
-        manager_socket.sendto(  # Chuan: Send the command result back to the peer over UDP
-            response.encode("utf-8"),  # Chuan: Convert SUCCESS/FAILURE from a string into bytes
-            peer_address,  # Chuan: Send the response to the peer that originally sent the command
-        )
-
-        print(f"[SENT] {response}")  # Chuan: Shows the outgoing response for the message trace
+        print("=" * 60)
 
 
 if __name__ == "__main__":
