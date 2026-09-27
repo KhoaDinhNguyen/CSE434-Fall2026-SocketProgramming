@@ -65,7 +65,7 @@ def main():
 
         # Send the command result back to the peer over UDP and log it
         manager_socket.sendto(response.encode("utf-8"), peer_address)
-        print(f"[SENT] -> {peer_address}: {response}")
+        print(f"[SEND] -> {peer_address}: {response}")
 
         print("=" * 60)
 
