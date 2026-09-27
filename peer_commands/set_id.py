@@ -37,10 +37,10 @@ def handle_set_id(args, peer_addr):
     peer_info.local_hash_table = peer_info.LocalHashTable(table_size)
 
     # Acknowledge the setup
-    message = f"At {peer_addr}, it has set id={id} ring_size={ring_size} r_neighbour=({r_name}, {r_ip}, {r_port})"
+    message = "SUCCESS"
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)
 
-    print(f"[SEND] -> {peer_addr}: SUCCESS")
+    print(f"[SEND] -> {peer_addr}: {message}")
 
 
 def has_invalid_set_id_args(args):

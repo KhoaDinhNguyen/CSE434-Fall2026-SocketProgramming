@@ -25,7 +25,7 @@ def listen_for_peer_message():
                 handle_set_id(params[1:], peer_addr)
             case "store":
                 handle_store(params[1:])
-            case "At":
+            case "SUCCESS":
                 pass
             case _:
                 print(f"Unknown command {data}")
@@ -76,7 +76,7 @@ def main():
             case "setup-dht":
                 do_setup_dht(params[1:], manager_addr)
             case "dht-complete":
-                do_dht_complete(manager_addr)
+                do_dht_complete(params[1:], manager_addr)
             case _:
                 print(f"Unknown command: {params[0]}")
 

@@ -43,12 +43,10 @@ def main():
 
         # Special case
         if manager_info.is_waiting_dht_complete:
-            leader_info = manager_info.peers_network[manager_info.dht_leader_name]
+            leader_name = params[1]
 
             # Only leaders can send dht-complete
-            leader_address = (leader_info.ip, leader_info.m_port)
-
-            if command != "dht-complete" or leader_address != peer_address:
+            if command != "dht-complete" or leader_name != manager_info.dht_leader_name:
                 response = "FAILURE"
             else:
                 response = "SUCCESS"
