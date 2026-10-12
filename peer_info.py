@@ -11,6 +11,7 @@ p_socket = None
 # ring topology
 id = -1
 ring_size = -1
+year = -1
 
 # right neighbor
 r_name = None
@@ -22,6 +23,9 @@ hash_table_size = -1
 local_hash_table = None
 counts = {}
 
+# leave-dht
+is_teardown_request = False
+
 
 class LocalHashTable:
     def __init__(self, size):
@@ -30,3 +34,6 @@ class LocalHashTable:
 
     def insert(self, pos, storm_event):
         self.mem[pos] = storm_event
+
+    def clear(self):
+        self.mem = [None] * self.size

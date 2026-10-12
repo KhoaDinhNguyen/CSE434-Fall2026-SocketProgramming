@@ -1,6 +1,9 @@
 import sys
 from manager_handlers.register import handle_register
 from manager_handlers.setup_dht import handle_setup_dht
+from manager_handlers.leave_dht import handle_leave_dht
+from manager_handlers.dht_rebuilt import handle_dht_rebuilt
+
 import manager_info
 from utils import create_udp_socket
 
@@ -52,12 +55,21 @@ def main():
                 response = "SUCCESS"
                 manager_info.is_waiting_dht_complete = False
                 print("Leader has completed the setup-dht subtasks")
+        elif manager_info.is_waiting_dht_rebuilt:
+            if command != "dht-rebuilt":
+                response = "FAILURE"
+            else:
+                response = handle_dht_rebuilt(params[1:])
+                if response == "SUCCESS":
+                    print("Peer has completed the leave-dht subtasks")
         else:
             match command:
                 case "setup-dht":
                     response = handle_setup_dht(params[1:])
                 case "register":
                     response = handle_register(params[1:])
+                case "leave-dht":
+                    response = handle_leave_dht(params[1:])
                 case _:
                     response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 

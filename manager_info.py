@@ -11,7 +11,6 @@ class Peer:
         self.m_port = m_port
         self.p_port = p_port
         self.state = "FREE"
-        self.identifier = -1
         self.ring_size = -1
 
 
@@ -31,6 +30,10 @@ dht_ring_size = 0
 dht_year = 0
 has_dht_exist = False
 is_waiting_dht_complete = False
+
+# Wait dht
+requester_name = ""
+is_waiting_dht_rebuilt = False
 
 
 # Create a table listing peerse in DHT
