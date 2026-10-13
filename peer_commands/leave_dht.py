@@ -1,8 +1,4 @@
 import peer_info
-from peer_commands.teardown_dht import do_teardown
-from peer_commands.reset_id import do_reset_id
-from peer_commands.rebuild_dht import do_rebuild_dht
-import time
 
 
 def do_leave_dht(args, manager_addr):

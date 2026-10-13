@@ -1,6 +1,7 @@
 import peer_info
 from .store import populate_dht
 from utils import load_storms_event
+import time
 
 
 def do_rebuild_dht():
@@ -19,6 +20,8 @@ def handle_rebuild_dht(peer_addr):
 
     # populate data
     populate_dht(events)
+
+    time.sleep(5)
 
     message = f"SUCCESS"
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)

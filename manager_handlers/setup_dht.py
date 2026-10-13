@@ -65,6 +65,18 @@ def has_invalid_setup_dht_args(args) -> bool:
     return False
 
 
+def random_select_in_dht_users(n_size: int):
+    in_dht_users = [
+        peer.name
+        for peer in manager_info.peers_network.values()
+        if peer.state == "INDHT" or peer.state == "LEADER"
+    ]
+
+    random.seed(42)
+
+    return random.sample(in_dht_users, n_size)
+
+
 def random_select_free_users(n_size: int):
     free_peers = [
         peer.name

@@ -3,6 +3,7 @@ from manager_handlers.register import handle_register
 from manager_handlers.setup_dht import handle_setup_dht
 from manager_handlers.leave_dht import handle_leave_dht
 from manager_handlers.dht_rebuilt import handle_dht_rebuilt
+from manager_handlers.join_dht import handle_random_peer, handle_join_dht
 
 import manager_info
 from utils import create_udp_socket
@@ -61,7 +62,7 @@ def main():
             else:
                 response = handle_dht_rebuilt(params[1:])
                 if response == "SUCCESS":
-                    print("Peer has completed the leave-dht subtasks")
+                    print("Peer has completed the leave-dht/join-dht subtasks")
         else:
             match command:
                 case "setup-dht":
@@ -70,6 +71,8 @@ def main():
                     response = handle_register(params[1:])
                 case "leave-dht":
                     response = handle_leave_dht(params[1:])
+                case "join-dht":
+                    response = handle_join_dht(params[1:])
                 case _:
                     response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 

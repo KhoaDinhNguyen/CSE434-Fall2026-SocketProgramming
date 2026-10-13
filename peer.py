@@ -10,6 +10,12 @@ from peer_commands.teardown_dht import handle_teardown, do_teardown
 from peer_commands.reset_id import handle_reset_id, do_reset_id
 from peer_commands.leave_dht import do_leave_dht
 from peer_commands.rebuild_dht import handle_rebuild_dht, do_rebuild_dht, do_dht_rebuilt
+from peer_commands.join_dht import (
+    handle_set_right_neighbor,
+    handle_update_right_neighbor,
+    do_join_dht,
+    do_update_right_neighbor,
+)
 
 
 def listen_for_peer_message():
@@ -37,6 +43,10 @@ def listen_for_peer_message():
                 handle_rebuild_dht(peer_addr)
             case "teardown":
                 do_teardown(params[1:])
+            case "update-right-neighbor":
+                handle_update_right_neighbor(params[1:], peer_addr)
+            case "set-right-neighbor":
+                handle_set_right_neighbor(params[1:], peer_addr)
             case "SUCCESS":
                 pass
             case _:
@@ -91,14 +101,19 @@ def main():
                 do_dht_complete(params[1:], manager_addr)
             case "leave-dht":
                 do_leave_dht(params[1:], manager_addr)
+            case "join-dht":
+                do_join_dht(params[1:], manager_addr)
+            case "dht-rebuilt":
+                do_dht_rebuilt(params[1:], manager_addr)
             case "reset-id":
                 do_reset_id(params[1:])
             case "teardown":
                 do_teardown(params[1:])
             case "rebuild-dht":
                 do_rebuild_dht()
-            case "dht-rebuilt":
-                do_dht_rebuilt(params[1:], manager_addr)
+            case "update-right-neighbor":
+                do_update_right_neighbor(params[1:])
+
             case _:
                 print(f"Unknown command: {params[0]}")
 
