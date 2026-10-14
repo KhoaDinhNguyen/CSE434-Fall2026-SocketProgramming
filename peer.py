@@ -6,6 +6,8 @@ from peer_commands.setup_dht import do_setup_dht
 from peer_commands.set_id import handle_set_id
 from peer_commands.dht_complete import do_dht_complete
 from peer_commands.store import handle_store
+from peer_commands.query_dht import do_query_dht
+from peer_commands.find_event import( handle_find_event, handle_query_success, handle_query_failure,)
 
 
 def listen_for_peer_message():
@@ -25,10 +27,21 @@ def listen_for_peer_message():
                 handle_set_id(params[1:], peer_addr)
             case "store":
                 handle_store(params[1:])
+            case "find-event":
+                handle_find_event(params[1:])
             case "SUCCESS":
-                pass
+                if len(params) > 1 and params[1] == "QUERY":
+                    handle_query_success(params[2:])
+                else:
+                    pass
+            case "FAILURE":
+                if len(params) > 1 and params[1] == "QUERY":
+                    handle_query_failure(params[2:])
+                else:
+                    pass
             case _:
                 print(f"Unknown command {data}")
+
 
         print("> ", end="", flush=True)
 
@@ -77,6 +90,8 @@ def main():
                 do_setup_dht(params[1:], manager_addr)
             case "dht-complete":
                 do_dht_complete(params[1:], manager_addr)
+            case "query-dht":
+                do_query_dht(params[1:], manager_addr)
             case _:
                 print(f"Unknown command: {params[0]}")
 

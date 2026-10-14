@@ -32,6 +32,9 @@ def do_register(args, manager_addr):
     if response == "SUCCESS":
         peer_info.name = name
         peer_info.state = "FREE"
+        peer_info.ip = ip
+        peer_info.m_port = m_port
+        peer_info.p_port = p_port
     else:
         peer_info.m_socket.close()
         peer_info.p_socket.close()

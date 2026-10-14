@@ -1,6 +1,7 @@
 import sys
 from manager_handlers.register import handle_register
 from manager_handlers.setup_dht import handle_setup_dht
+from manager_handlers.query_dht import handle_query_dht 
 import manager_info
 from utils import create_udp_socket
 
@@ -58,6 +59,8 @@ def main():
                     response = handle_setup_dht(params[1:])
                 case "register":
                     response = handle_register(params[1:])
+                case "query-dht":
+                    response = handle_query_dht(params[1:]) 
                 case _:
                     response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 
