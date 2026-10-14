@@ -34,9 +34,45 @@ def handle_teardown(args, peer_addr):
         do_teardown([init_peer_name])
 
 
+def do_teardown_dht(args, manager_addr):
+    if has_invalid_do_teardown(args):
+        print("Invalid request")
+        return
+
+    leader_name = args[0]
+
+    message = f"teardown-dht {leader_name}"
+    peer_info.m_socket.sendto(message.encode("utf-8"), manager_addr)
+
+    print(f"[SEND] -> {manager_addr}: {message}")
+
+    response, _ = peer_info.m_socket.recvfrom(4096)
+    response = response.decode("utf-8")
+
+    print(f"[RECV] <- {manager_addr}: {response}")
+
+
+def do_teardown_complete(args, manager_addr):
+    if has_invalid_do_teardown(args):
+        print("Invalid request")
+        return
+
+    leader_name = args[0]
+
+    message = f"teardown-complete {leader_name}"
+    peer_info.m_socket.sendto(message.encode("utf-8"), manager_addr)
+
+    print(f"[SEND] -> {manager_addr}: {message}")
+
+    response, _ = peer_info.m_socket.recvfrom(4096)
+    response = response.decode("utf-8")
+
+    print(f"[RECV] <- {manager_addr}: {response}")
+
+
 def has_invalid_do_teardown(args):
     try:
-        init_peer_name = args[0]
+        _ = args[0]
     except:
         return True
 

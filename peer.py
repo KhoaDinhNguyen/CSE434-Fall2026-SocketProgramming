@@ -6,7 +6,12 @@ from peer_commands.setup_dht import do_setup_dht
 from peer_commands.set_id import handle_set_id
 from peer_commands.dht_complete import do_dht_complete
 from peer_commands.store import handle_store
-from peer_commands.teardown_dht import handle_teardown, do_teardown
+from peer_commands.teardown_dht import (
+    handle_teardown,
+    do_teardown,
+    do_teardown_complete,
+    do_teardown_dht,
+)
 from peer_commands.reset_id import handle_reset_id, do_reset_id
 from peer_commands.leave_dht import do_leave_dht
 from peer_commands.rebuild_dht import handle_rebuild_dht, do_rebuild_dht, do_dht_rebuilt
@@ -105,6 +110,10 @@ def main():
                 do_join_dht(params[1:], manager_addr)
             case "dht-rebuilt":
                 do_dht_rebuilt(params[1:], manager_addr)
+            case "teardown-dht":
+                do_teardown_dht(params[1:], manager_addr)
+            case "teardown-complete":
+                do_teardown_complete(params[1:], manager_addr)
             case "reset-id":
                 do_reset_id(params[1:])
             case "teardown":

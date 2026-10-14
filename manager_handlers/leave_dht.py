@@ -8,6 +8,7 @@ def handle_leave_dht(args):
     peer_name = args[0]
     manager_info.requester_name = peer_name
     manager_info.is_waiting_dht_rebuilt = True
+    manager_info.requester_command = "leave-dht"
 
     print("Waiting for dht-rebult from same peer name...")
 

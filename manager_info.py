@@ -33,7 +33,11 @@ is_waiting_dht_complete = False
 
 # Wait dht
 requester_name = ""
+requester_command = ""
 is_waiting_dht_rebuilt = False
+
+# Tear down complete
+is_waiting_teardown_complete = False
 
 
 # Create a table listing peerse in DHT

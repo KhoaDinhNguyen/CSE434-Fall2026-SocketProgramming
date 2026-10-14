@@ -10,7 +10,7 @@ def do_reset_id(args):
     init_peer_name = args[0]
     id = int(args[1])
     ring_size = int(args[2])
-    is_leave = args[3]
+    is_leave = int(args[3])
 
     forward_reset_id(
         [
@@ -53,7 +53,7 @@ def handle_reset_id(args, peer_addr):
     r_name = args[3]
     r_ip = args[4]
     r_port = args[5]
-    is_leave = args[6]
+    is_leave = int(args[6])
 
     peer_info.id = id
     peer_info.ring_size = ring_size
@@ -72,7 +72,7 @@ def handle_reset_id(args, peer_addr):
         forward_reset_id(
             [init_peer_name, id + 1, ring_size, r_name, r_ip, r_port, is_leave]
         )
-    elif init_peer_name == peer_info.r_name and is_leave == "true":
+    elif init_peer_name == peer_info.r_name and is_leave == 1:
         peer_info.r_name = r_name
         peer_info.r_ip = r_ip
         peer_info.r_port = r_port
@@ -87,7 +87,7 @@ def has_invalid_do_reset_id(args):
         init_peer_name = args[0]
         id = int(args[1])
         ring_size = int(args[2])
-        is_leave = args[3]
+        is_leave = int(args[3])
     except:
         return True
 
