@@ -8,7 +8,7 @@ from peer_commands.dht_complete import do_dht_complete
 from peer_commands.store import handle_store
 from peer_commands.query_dht import do_query_dht
 from peer_commands.find_event import( handle_find_event, handle_query_success, handle_query_failure,)
-
+from peer_commands.deregister import do_deregister 
 
 def listen_for_peer_message():
     while True:
@@ -92,6 +92,9 @@ def main():
                 do_dht_complete(params[1:], manager_addr)
             case "query-dht":
                 do_query_dht(params[1:], manager_addr)
+            case "deregister":
+                if do_deregister(params[1:], manager_addr):
+                    break
             case _:
                 print(f"Unknown command: {params[0]}")
 

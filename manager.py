@@ -4,6 +4,7 @@ from manager_handlers.setup_dht import handle_setup_dht
 from manager_handlers.query_dht import handle_query_dht 
 import manager_info
 from utils import create_udp_socket
+from manager_handlers.deregister import handle_deregister 
 
 
 def main():
@@ -59,6 +60,8 @@ def main():
                     response = handle_setup_dht(params[1:])
                 case "register":
                     response = handle_register(params[1:])
+                case "deregister":
+                    response = handle_deregister(params[1:])
                 case "query-dht":
                     response = handle_query_dht(params[1:]) 
                 case _:
