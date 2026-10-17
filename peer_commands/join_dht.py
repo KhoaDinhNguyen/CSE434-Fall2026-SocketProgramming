@@ -59,6 +59,7 @@ def handle_update_right_neighbor(args, peer_addr):
     hash_table_size = peer_info.hash_table_size
     ring_size = peer_info.ring_size
     year = peer_info.year
+    dht_peers = peer_info.dht_peers_to_str()
 
     # New state
     peer_info.r_name = name
@@ -67,7 +68,7 @@ def handle_update_right_neighbor(args, peer_addr):
 
     print(f"Successfully reassign neighbor to be {name} ({ip}, {port})")
 
-    message = f"set-right-neighbor {r_name} {r_ip} {r_port} {hash_table_size} {ring_size} {year}"
+    message = f"set-right-neighbor {r_name} {r_ip} {r_port} {hash_table_size} {ring_size} {year} {dht_peers}"
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)
 
     print(f"[SEND] -> {peer_addr}: {message}")
@@ -80,6 +81,7 @@ def handle_set_right_neighbor(args, peer_addr):
     hash_table_size = int(args[3])
     ring_size = int(args[4])
     year = int(args[5])
+    dht_peers = args[6]
 
     peer_info.r_name = r_name
     peer_info.r_ip = r_ip
@@ -88,8 +90,10 @@ def handle_set_right_neighbor(args, peer_addr):
     peer_info.ring_size = ring_size
     peer_info.year = year
     peer_info.local_hash_table = peer_info.LocalHashTable(hash_table_size)
+    peer_info.dht_peers = peer_info.str_to_dht_peers(dht_peers)
 
     print(f"Successfully reassign neighbor to be {r_name} ({r_ip}, {r_port})")
+    peer_info.print_dht_peers()
 
     message = f"SUCCESS"
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)

@@ -50,6 +50,8 @@ def handle_set_id(args, peer_addr):
         ip = dht_peer_args[start + 1]
         p_port = int(dht_peer_args[start + 2])
         peer_info.dht_peers[peer_id] = (name, ip, p_port)
+
+    peer_info.print_dht_peers()
     # Acknowledge the setup
     message = "SUCCESS"
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)
