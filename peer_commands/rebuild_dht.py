@@ -21,6 +21,7 @@ def handle_rebuild_dht(peer_addr):
     # populate data
     populate_dht(events)
 
+    # Wait events to finish
     time.sleep(5)
 
     message = f"SUCCESS"
@@ -36,8 +37,8 @@ def do_dht_rebuilt(args, manager_addr):
 
         # Send the command to manager
         message = f"dht-rebuilt {peer_name} {leader_name}"
-
         peer_info.m_socket.sendto(message.encode("utf-8"), manager_addr)
+
         print(f"[SEND] -> {manager_addr}: {message}")
 
         # Receive response from manager

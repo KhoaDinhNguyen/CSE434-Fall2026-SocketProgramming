@@ -53,9 +53,7 @@ def do_setup_dht(args, manager_addr):
         r_params = r_row.split(" ")
         r_name, r_ip, r_port = r_params
 
-        do_set_id(
-            [id, ring_size, year, r_name, r_ip, r_port, table_size], (ip, int(p_port))
-        )
+        do_set_id([id, ring_size, year, r_name, r_ip, r_port, table_size], (ip, int(p_port)))
 
         # Wait for response
         time.sleep(2)

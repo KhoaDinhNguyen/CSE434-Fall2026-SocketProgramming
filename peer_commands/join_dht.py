@@ -19,16 +19,8 @@ def do_join_dht(args, manager_addr):
     print(f"[RECV] <- {manager_addr}: {response}")
 
 
-def has_invalid_do_join_dht(args):
-    try:
-        peer_name = args[0]
-    except:
-        return True
-
-    return False
-
-
 def do_random_peer(manager_addr):
+    # Send command
     message = "random-peer"
     peer_info.m_socket.sendto(message.encode("utf-8"), manager_addr)
 
@@ -103,3 +95,7 @@ def handle_set_right_neighbor(args, peer_addr):
     peer_info.p_socket.sendto(message.encode("utf-8"), peer_addr)
 
     print(f"[SEND] -> {peer_addr}: {message}")
+
+
+def has_invalid_do_join_dht(args) -> bool:
+    return not isinstance(args, list) or len(args) < 1

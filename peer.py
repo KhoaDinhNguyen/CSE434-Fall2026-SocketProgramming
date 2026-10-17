@@ -95,6 +95,9 @@ def main():
 
         match command:
             case "quit":
+                if peer_info.m_socket:
+                    peer_info.m_socket.close()
+                    peer_info.p_socket.close()
                 break
             case "register":
                 do_register(params[1:], manager_addr)
@@ -118,10 +121,10 @@ def main():
                 do_reset_id(params[1:])
             case "teardown":
                 do_teardown(params[1:])
-            case "rebuild-dht":
-                do_rebuild_dht()
             case "update-right-neighbor":
                 do_update_right_neighbor(params[1:])
+            case "rebuild-dht":
+                do_rebuild_dht()
 
             case _:
                 print(f"Unknown command: {params[0]}")

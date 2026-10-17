@@ -4,9 +4,7 @@ import peer_info
 
 def populate_dht(events):
     for event in events:
-        pos, target_id = compute_pos_and_id(
-            event.event_id, peer_info.hash_table_size, peer_info.ring_size
-        )
+        pos, target_id = compute_pos_and_id(event.event_id, peer_info.hash_table_size, peer_info.ring_size)
 
         # Stores records at each node
         peer_info.counts[target_id] += 1
@@ -20,7 +18,7 @@ def populate_dht(events):
             r_neighbor = (peer_info.r_ip, peer_info.r_port)
             peer_info.p_socket.sendto(message.encode("utf-8"), r_neighbor)
 
-            print(f"[FORWARD] -> {r_neighbor}: {message}")
+            print(f"[FWRD] -> {r_neighbor}: {message}")
 
     # Configure the nodes
     print("Records distribution:")
@@ -44,4 +42,4 @@ def handle_store(args):
         r_neighbor = (peer_info.r_ip, peer_info.r_port)
         peer_info.p_socket.sendto(forward_message.encode("utf-8"), r_neighbor)
 
-        print(f"[FORWARD] -> {r_neighbor}: {forward_message}")
+        print(f"[FWRD] -> {r_neighbor}: {forward_message}")

@@ -46,8 +46,7 @@ def main():
         # Shows what message the manager received for the required trace output
         print(f"[RECV] <- {peer_address}: {data}")
 
-        # Special case
-        if manager_info.is_waiting_dht_complete:
+        if manager_info.is_waiting_dht_complete:  # Manager is waiting dht-complete
             leader_name = params[1]
 
             # Only leaders can send dht-complete
@@ -57,17 +56,17 @@ def main():
                 response = "SUCCESS"
                 manager_info.is_waiting_dht_complete = False
                 print("Leader has completed the setup-dht subtasks")
-        elif manager_info.is_waiting_dht_rebuilt:
+        elif manager_info.is_waiting_dht_rebuilt:  # Manager is waiting dht-rebuilt
             if command != "dht-rebuilt":
                 response = "FAILURE"
             else:
                 response = handle_dht_rebuilt(params[1:])
                 if response == "SUCCESS":
-                    print(
-                        f"Peer has completed the {manager_info.requester_command} subtasks"
-                    )
+                    print(f"Peer has completed the {manager_info.requester_command} subtasks")
+                    manager_info.is_waiting_dht_rebuilt = False
                     manager_info.requester_command = ""
-        elif manager_info.is_waiting_teardown_complete:
+                    manager_info.requester_name = ""
+        elif manager_info.is_waiting_teardown_complete:  # Manager is waiting teardown-rebuilt
             if command != "teardown-complete":
                 response = "FAILURE"
             else:

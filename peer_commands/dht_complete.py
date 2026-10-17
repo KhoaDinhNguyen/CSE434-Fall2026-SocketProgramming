@@ -20,10 +20,5 @@ def do_dht_complete(args, manager_addr):
     print(f"[RECV] <- {manager_addr}: {reponse}")
 
 
-def has_invalid_dht_complete_args(args):
-    try:
-        peer_name = args[0]
-    except:
-        return True
-
-    return False
+def has_invalid_dht_complete_args(args) -> bool:
+    return not isinstance(args, list) or len(args) < 1

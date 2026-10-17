@@ -6,6 +6,10 @@ def handle_leave_dht(args):
         return "FAILURE"
 
     peer_name = args[0]
+
+    if manager_info.peers_network[peer_name].state == "FREE" or not manager_info.has_dht_exist:
+        return "FAILURE"
+
     manager_info.requester_name = peer_name
     manager_info.is_waiting_dht_rebuilt = True
     manager_info.requester_command = "leave-dht"
@@ -15,13 +19,5 @@ def handle_leave_dht(args):
     return "SUCCESS"
 
 
-def has_invalid_leave_dht_args(args):
-    try:
-        peer_name = args[0]
-
-        if manager_info.peers_network[peer_name].state == "FREE":
-            return True
-    except:
-        return True
-
-    return False
+def has_invalid_leave_dht_args(args) -> bool:
+    return not isinstance(args, list) or len(args) < 1
