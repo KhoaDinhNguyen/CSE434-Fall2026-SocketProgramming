@@ -82,10 +82,26 @@ def load_storms_event(filepath):
     events = []
 
     with gzip.open(filepath, "rt", newline="", encoding="utf-8") as f:
-        reader = csv.reader(f)
-        next(reader)
+        reader = csv.DictReader(f)
 
         for row in reader:
-            events.append(StormEvent(row))
+            values = [
+                row["EVENT_ID"],
+                row["STATE"],
+                row["YEAR"],
+                row["MONTH_NAME"],
+                row["EVENT_TYPE"],
+                row["CZ_TYPE"],
+                row["CZ_NAME"],
+                row["INJURIES_DIRECT"],
+                row["INJURIES_INDIRECT"],
+                row["DEATHS_DIRECT"],
+                row["DEATHS_INDIRECT"],
+                row["DAMAGE_PROPERTY"],
+                row["DAMAGE_CROPS"],
+                row["TOR_F_SCALE"],
+            ]
+
+            events.append(StormEvent(values))
 
     return events

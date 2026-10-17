@@ -34,6 +34,12 @@ def do_setup_dht(args, manager_addr):
     table = response.split("\n")
     table = table[1:]
 
+    # Flatten the full DHT peer table so set-id can send it
+    dht_peer_args = []
+    for row in table:
+        name, ip, p_port = row.split(" ")
+        dht_peer_args.extend([name, ip, p_port])
+
     # loads data
     events = load_storms_event(f"details-{year}.csv.gz")
     l = len(events)
@@ -53,7 +59,11 @@ def do_setup_dht(args, manager_addr):
         r_params = r_row.split(" ")
         r_name, r_ip, r_port = r_params
 
-        do_set_id([id, ring_size, year, r_name, r_ip, r_port, table_size], (ip, int(p_port)))
+        # do_set_id([id, ring_size, year, r_name, r_ip, r_port, table_size], (ip, int(p_port)))
+        do_set_id(
+            [id, ring_size, year, r_name, r_ip, r_port, table_size, *dht_peer_args],
+            (ip, int(p_port)),
+        )
 
         # Wait for response
         time.sleep(2)

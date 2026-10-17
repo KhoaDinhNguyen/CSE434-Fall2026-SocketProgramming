@@ -22,6 +22,14 @@ from peer_commands.join_dht import (
     do_update_right_neighbor,
 )
 
+from peer_commands.query_dht import do_query_dht
+from peer_commands.find_event import (
+    handle_find_event,
+    handle_query_success,
+    handle_query_failure,
+)
+from peer_commands.deregister import do_deregister
+
 
 def listen_for_peer_message():
     while True:
@@ -52,8 +60,18 @@ def listen_for_peer_message():
                 handle_update_right_neighbor(params[1:], peer_addr)
             case "set-right-neighbor":
                 handle_set_right_neighbor(params[1:], peer_addr)
+            case "find-event":
+                handle_find_event(params[1:])
             case "SUCCESS":
-                pass
+                if len(params) > 1 and params[1] == "QUERY":
+                    handle_query_success(params[2:])
+                else:
+                    pass
+            case "FAILURE":
+                if len(params) > 1 and params[1] == "QUERY":
+                    handle_query_failure(params[2:])
+                else:
+                    pass
             case _:
                 print(f"Unknown command {data}")
 
@@ -125,7 +143,11 @@ def main():
                 do_update_right_neighbor(params[1:])
             case "rebuild-dht":
                 do_rebuild_dht()
-
+            case "query-dht":
+                do_query_dht(params[1:], manager_addr)
+            case "deregister":
+                if do_deregister(params[1:], manager_addr):
+                    break
             case _:
                 print(f"Unknown command: {params[0]}")
 
