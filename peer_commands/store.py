@@ -29,7 +29,7 @@ def populate_dht(events):
 def handle_store(args):
     target_id = int(args[0])
     pos = int(args[1])
-    data = args[2]
+    data = " ".join(args[2:])
 
     # Convert the event object from string
     event = StormEvent.from_string(data)
