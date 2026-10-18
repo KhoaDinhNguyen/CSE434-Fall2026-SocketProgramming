@@ -1,7 +1,7 @@
 from utils import compute_pos_and_id, StormEvent
 import peer_info
 import sys
-
+import time
 
 def populate_dht(events):
     for event in events:
@@ -27,6 +27,8 @@ def populate_dht(events):
             message = f"store {target_id} {pos} {event.to_string()}"
             r_neighbor = (peer_info.r_ip, peer_info.r_port)
             peer_info.p_socket.sendto(message.encode("utf-8"), r_neighbor)
+
+            time.sleep(0.0005)  # Sleep for 0.5 milliseconds to avoid overwhelming the network
 
             print(f"[FWRD] -> {r_neighbor}: {message}")
 
