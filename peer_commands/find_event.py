@@ -38,15 +38,22 @@ def handle_find_event(args):
         f"at node id={peer_info.id}, pos={pos}, target_id={target_id}"
     )
 
-    # Check this peer's local hash table
-    event = peer_info.local_hash_table.find(pos, event_id)
-    if event is not None:
-        send_query_success(
-            event,
-            id_seq,
-            (source_ip, source_port)
-        )
-        return 
+    if target_id == peer_info.id:
+        event = peer_info.local_hash_table.find(pos, event_id)
+
+        if event is not None:
+            send_query_success(
+                event,
+                id_seq,
+                (source_ip, source_port)
+            )
+        else:
+            send_query_failure(
+                event_id,
+                id_seq,
+                (source_ip, source_port)
+            )
+        return
 
     # Find DHT peers that have not been visited yet
     unvisited_ids = [
