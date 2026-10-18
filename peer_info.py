@@ -43,7 +43,12 @@ class LocalHashTable:
         self.mem = [[] for _ in range(self.size)]
 
     def find(self, pos, event_id):
+        # print(ring_size)
+        # print(self.size)
+        # print(pos)
+        # print(len(self.mem[pos]))
         for event in self.mem[pos]:
+            # print(event_id, end=",")
             if event.event_id == event_id:
                 return event
         return None
