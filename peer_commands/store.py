@@ -1,5 +1,6 @@
 from utils import compute_pos_and_id, StormEvent
 import peer_info
+import sys
 
 
 def populate_dht(events):
@@ -13,6 +14,13 @@ def populate_dht(events):
 
         # If the target_id matches with process id, stores data at local
         # If not, forward the records to right neighbour
+        # print(event.event_id, end=",")
+
+        if event.event_id == 5539287:
+            print(event.event_id)
+            print(pos)
+            print(target_id)
+
         if target_id == peer_info.id:
             peer_info.local_hash_table.insert(pos, event)
         else:
@@ -20,7 +28,7 @@ def populate_dht(events):
             r_neighbor = (peer_info.r_ip, peer_info.r_port)
             peer_info.p_socket.sendto(message.encode("utf-8"), r_neighbor)
 
-            print(f"[FORWARD] -> {r_neighbor}: {message}")
+            print(f"[FWRD] -> {r_neighbor}: {message}")
 
     # Configure the nodes
     print("Records distribution:")
@@ -31,7 +39,7 @@ def populate_dht(events):
 def handle_store(args):
     target_id = int(args[0])
     pos = int(args[1])
-    data = args[2]
+    data = " ".join(args[2:])
 
     # Convert the event object from string
     event = StormEvent.from_string(data)
@@ -40,8 +48,8 @@ def handle_store(args):
         peer_info.local_hash_table.insert(pos, event)
         print(f"Stored event_id={event.event_id} at pos={pos}")
     else:
-        forward_message = f"store {target_id} {pos} {data}"
+        forward_message = f"store {target_id} {pos} {event.to_string()}"
         r_neighbor = (peer_info.r_ip, peer_info.r_port)
         peer_info.p_socket.sendto(forward_message.encode("utf-8"), r_neighbor)
 
-        print(f"[FORWARD] -> {r_neighbor}: {forward_message}")
+        print(f"[FWRD] -> {r_neighbor}: {forward_message}")

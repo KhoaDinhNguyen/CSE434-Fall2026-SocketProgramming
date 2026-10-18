@@ -1,8 +1,14 @@
 import sys
 from manager_handlers.register import handle_register
 from manager_handlers.setup_dht import handle_setup_dht
+from manager_handlers.leave_dht import handle_leave_dht
+from manager_handlers.dht_rebuilt import handle_dht_rebuilt
+from manager_handlers.join_dht import handle_join_dht
+from manager_handlers.teardown_dht import handle_teardown_complete, handle_teardown_dht
+from manager_handlers.query_dht import handle_query_dht
 import manager_info
 from utils import create_udp_socket
+from manager_handlers.deregister import handle_deregister
 
 
 def main():
@@ -41,8 +47,7 @@ def main():
         # Shows what message the manager received for the required trace output
         print(f"[RECV] <- {peer_address}: {data}")
 
-        # Special case
-        if manager_info.is_waiting_dht_complete:
+        if manager_info.is_waiting_dht_complete:  # Manager is waiting dht-complete
             leader_name = params[1]
 
             # Only leaders can send dht-complete
@@ -52,12 +57,43 @@ def main():
                 response = "SUCCESS"
                 manager_info.is_waiting_dht_complete = False
                 print("Leader has completed the setup-dht subtasks")
+        elif manager_info.is_waiting_dht_rebuilt:  # Manager is waiting dht-rebuilt
+            if command != "dht-rebuilt":
+                response = "FAILURE"
+            else:
+                response = handle_dht_rebuilt(params[1:])
+                if response == "SUCCESS":
+                    print(
+                        f"Peer has completed the {manager_info.requester_command} subtasks"
+                    )
+                    manager_info.is_waiting_dht_rebuilt = False
+                    manager_info.requester_command = ""
+                    manager_info.requester_name = ""
+        elif (
+            manager_info.is_waiting_teardown_complete
+        ):  # Manager is waiting teardown-rebuilt
+            if command != "teardown-complete":
+                response = "FAILURE"
+            else:
+                response = handle_teardown_complete(params[1:])
+                if response == "SUCCESS":
+                    print("Leader has completed the teardown-dht subtasks")
         else:
             match command:
                 case "setup-dht":
                     response = handle_setup_dht(params[1:])
                 case "register":
                     response = handle_register(params[1:])
+                case "leave-dht":
+                    response = handle_leave_dht(params[1:])
+                case "join-dht":
+                    response = handle_join_dht(params[1:])
+                case "teardown-dht":
+                    response = handle_teardown_dht(params[1:])
+                case "deregister":
+                    response = handle_deregister(params[1:])
+                case "query-dht":
+                    response = handle_query_dht(params[1:])
                 case _:
                     response = "FAILURE"  # Give unknown commands a response instead of doing nothing
 
